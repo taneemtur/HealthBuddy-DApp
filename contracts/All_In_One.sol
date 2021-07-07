@@ -1,30 +1,29 @@
-pragma solidity ^0.4.19;
-//pragma experimental ABIEncoderV2;
- 
- 
+pragma solidity ^0.5.1;
+// pragma experimental ABIEncoderV2;
+
 contract All_In_One {
     
     // Paitent Structure here 
     
     struct paitent {           
-        bytes32 name;
-        bytes32 addres;
-        uint phoneNo;
-        bytes32 bloodGroup;
-        uint insuranceCompanyId;
-        uint emergencyContact;
-        bytes32 Precautions;
-        uint [] treatmentId;
+        string name;
+        string addres;
+        uint256 phoneNo;
+        string bloodGroup;
+        uint256 insuranceCompanyId;
+        uint256 emergencyContact;  
+        string Precautions;
+        uint256 [] treatmentId;
     }
     
-    mapping (uint => uint ) entitie;
-    mapping (uint => paitent ) p_info;
-    mapping (address => uint) addresstoId;
-    mapping (uint => address) IdtoAdress;
-    mapping(address => uint)balancesOfMoney;
+    mapping (uint256 => uint256 ) entitie;
+    mapping (uint256 => paitent ) p_info;
+    mapping (address => uint256) addresstoId;
+    mapping (uint256 => address) IdtoAdress;
+    mapping(address => uint256)balancesOfMoney;
  
     
-    function addPatientInfo (uint _adharCardNumber, bytes32 _name, bytes32 _addres,uint _phoneNo ,bytes32 _bloodGroup , uint _insuranceCompany, uint _emergencyContact) public  {
+    function addPatientInfo (uint256 _adharCardNumber, string memory _name,string memory _addres,uint256 _phoneNo ,string memory _bloodGroup , uint256 _insuranceCompany, uint256 _emergencyContact) public  {
         require(entitie[_adharCardNumber]==0 && addresstoId[msg.sender]==0); 
         p_info[_adharCardNumber].name = _name;
         p_info[_adharCardNumber].addres = _addres;
@@ -37,12 +36,12 @@ contract All_In_One {
         IdtoAdress[_adharCardNumber] = msg.sender;
     }
     
-    function getPatientInfo(uint  _adharCardNumber) public view returns(bytes32 name , bytes32 addres,uint phoneNo ,bytes32 bloodGroup , uint insuranceCompany, uint emergencyContacts, bytes32 Precautions){
+    function getPatientInfo(uint256  _adharCardNumber) public view returns(string memory name , string memory addres,uint256 phoneNo ,string memory bloodGroup , uint256 insuranceCompany, uint256 emergencyContacts,string memory Precautions){
         require(entitie[_adharCardNumber]==1 || entitie[_adharCardNumber]==2 );
         return(p_info[_adharCardNumber].name, p_info[_adharCardNumber].addres, p_info[_adharCardNumber].phoneNo, p_info[_adharCardNumber].bloodGroup, p_info[_adharCardNumber].insuranceCompanyId, p_info[_adharCardNumber].emergencyContact,p_info[_adharCardNumber].Precautions);
     }
     
-    function UpdatePrecautions( uint _adharCardNumber,bytes32 _Precautions ) public {
+    function UpdatePrecautions( uint256 _adharCardNumber,string memory _Precautions ) public {
         require(entitie[_adharCardNumber]==1);
         p_info[_adharCardNumber].Precautions = _Precautions;
     }
@@ -50,14 +49,14 @@ contract All_In_One {
     //---------------------------------------------------------------------------------------------------------------------------------
     // Insurance is here 
     struct insuranceCompany {
-        bytes32 name ;
-        uint phoneNo;
-        bytes32 [] notCovered;
+        string name ;
+        uint256 phoneNo;
+        string [] notCovered;
     }
     
-    mapping (uint => insuranceCompany)insu_info;
+    mapping (uint256 => insuranceCompany)insu_info;
  
-    function addInsurancecompany (uint _companyId, bytes32 _name, uint phone_no) public{
+    function addInsurancecompany (uint256 _companyId,string memory _name, uint256 phone_no) public{
         require(entitie[_companyId]==0 && addresstoId[msg.sender]==0); 
         insu_info[_companyId].name = _name;
         insu_info[_companyId].phoneNo = phone_no;
@@ -67,35 +66,32 @@ contract All_In_One {
         IdtoAdress[_companyId] = msg.sender;
     }
     
-    function getInsuranceCompany (uint Insu_id) public view returns (bytes32 name, uint phoneNo){
-        uint val = addresstoId[msg.sender];
+    function getInsuranceCompany (uint256 Insu_id) public view returns (string memory name, uint256 phoneNo){
+        uint256 val = addresstoId[msg.sender];
         require(entitie[val]==1 || entitie[Insu_id]==3); 
-        uint length = insu_info[Insu_id].notCovered.length;
+        uint256 length = insu_info[Insu_id].notCovered.length;
         return(insu_info[Insu_id].name, insu_info[Insu_id].phoneNo);
     }
     
-    function addNotCoverdMedicationInInsurance(bytes32 _Medication) public{
-        uint val = addresstoId[msg.sender];
+    function addNotCoverdMedicationInInsurance(string memory _Medication) public{
+        uint256 val = addresstoId[msg.sender];
         require(entitie[val]==3); 
         insu_info[val].notCovered.push(_Medication);  
     }
     
-    function applyForInsurance(uint64 _adharCardNumber) public view returns(bytes32 InsuranceStatus){
-        uint val = addresstoId[msg.sender];
+    function applyForInsurance(uint256 _adharCardNumber) public view returns(string memory InsuranceStatus){
+        uint256 val = addresstoId[msg.sender];
         require((entitie[_adharCardNumber]==1 || entitie[_adharCardNumber]==2) && (entitie[val]==1 || entitie[2]==2));
-        uint insu_id = p_info[_adharCardNumber].insuranceCompanyId;
-        uint latestTreatmentid = p_info[_adharCardNumber].treatmentId[p_info[_adharCardNumber].treatmentId.length-1];
+        uint256 insu_id = p_info[_adharCardNumber].insuranceCompanyId;
+        uint256 latestTreatmentid = p_info[_adharCardNumber].treatmentId[p_info[_adharCardNumber].treatmentId.length-1];
         bool flag = true;
-        for(uint j=0;j<insu_info[insu_id].notCovered.length;j++){
+        for(uint256 j=0;j<insu_info[insu_id].notCovered.length;j++){
             if(flag!=true)
             break;
             else{
-                for(uint i=0;i<tid[latestTreatmentid].InsuranceKeep.length;){
-                    if(keccak256(insu_info[insu_id].notCovered[j])==keccak256(tid[latestTreatmentid].InsuranceKeep[i]))
-                    {
+                for(uint256 i=0;i<tid[latestTreatmentid].InsuranceKeep.length;){
                         flag = false;
                         break;
-                    }
                 }    
             }
         }
@@ -110,26 +106,26 @@ contract All_In_One {
     //---------------------------------------------------------------------------------------------------------------------------------
     // Treatment Structure here 
     struct treatment {
-        uint patient_id;
-        uint doctor_id;
-        bytes32 diagnosis;
-        bytes32 test_conducted;
-        uint bill;
-        bytes32 medicine;
-        bytes32 [] InsuranceKeep;
+        uint256 patient_id;
+        uint256 doctor_id;
+        string diagnosis;
+        string test_conducted;
+        uint256 bill;
+        string medicine;
+        string [] InsuranceKeep;
     }
     
-    mapping(uint=>treatment) tid;
+    mapping(uint256=>treatment) tid;
             
-    function createTreatmentID(uint patient_id) public returns (uint){
-        uint treatment_id = (142317*patient_id)%1000003;
+    function createTreatmentID(uint256 patient_id) public returns (uint256){
+        uint256 treatment_id = (142317*patient_id)%1000003;
         return treatment_id;
     }
     
-    function TreatPatient(uint patient_id,uint doctor_id,bytes32 diagnosis,bytes32 test_conducted,uint bill,bytes32 medicine) public  returns (uint){
-        uint val = addresstoId[msg.sender];
+    function TreatPatient(uint256 patient_id,uint256 doctor_id,string memory diagnosis,string memory test_conducted,uint256 bill,string memory medicine) public  returns (uint256){
+        uint256 val = addresstoId[msg.sender];
         require(entitie[patient_id]==1 || entitie[val]==2 );
-        uint _tid = createTreatmentID(patient_id);
+        uint256 _tid = createTreatmentID(patient_id);
         tid[_tid].patient_id = patient_id;
         tid[_tid].doctor_id = doctor_id;
         tid[_tid].diagnosis = diagnosis;
@@ -140,14 +136,14 @@ contract All_In_One {
         return _tid;
     }
     
-    function getTreatmentDetails(uint _tid) public view returns (uint p_id,uint d_id,bytes32 diagnosis,bytes32 test_conducted,uint bill,bytes32 medicine) {
+    function getTreatmentDetails(uint256 _tid) public view returns (uint256 p_id,uint256 d_id,string memory diagnosis,string memory test_conducted,uint256 bill,string memory medicine) {
         return (tid[_tid].patient_id,tid[_tid].doctor_id,tid[_tid].diagnosis,tid[_tid].test_conducted,tid[_tid].bill,tid[_tid].medicine);
     }
         
-    function addInsuranceKeep(uint p_id, bytes32  _medication) public {
-        uint val = addresstoId[msg.sender];
+    function addInsuranceKeep(uint256 p_id,string memory  _medication) public {
+        uint256 val = addresstoId[msg.sender];
         require(entitie[val]==2); 
-        uint _t_id = p_info[p_id].treatmentId[p_info[p_id].treatmentId.length-1];
+        uint256 _t_id = p_info[p_id].treatmentId[p_info[p_id].treatmentId.length-1];
         tid[_t_id].InsuranceKeep.push(_medication);   
     }
     
@@ -155,18 +151,18 @@ contract All_In_One {
     //Doctor starts here
     
      struct doctor{
-        uint doc_id;
-        bytes32 name;
-        bytes32 practice_type;
-        bytes32 area_of_expertize;
-        uint phone_no;
-        bytes32 Address;
+        uint256 doc_id;
+        string name;
+        string practice_type;
+        string area_of_expertize;
+        uint256 phone_no;
+        string Address;
     }
     
-    mapping(uint=>doctor) did;
-    mapping(uint => uint) Otp;
+    mapping(uint256=>doctor) did;
+    mapping(uint256 => uint256) Otp;
     
-    function addDoctor(uint doc_id,bytes32 name,bytes32 practice_type,bytes32 area_of_expertize,uint phone_no,bytes32 Address) public {
+    function addDoctor(uint256 doc_id,string memory name,string memory practice_type,string memory area_of_expertize,uint256 phone_no,string memory Address) public {
         require(entitie[doc_id]==0 || addresstoId[msg.sender]==0); 
         did[doc_id] = doctor(doc_id,name,practice_type,area_of_expertize,phone_no,Address);
         entitie[doc_id]=2;
@@ -174,41 +170,35 @@ contract All_In_One {
         IdtoAdress[doc_id] = msg.sender;
     }
  
-    function getDoctorDetails(uint _d_id) public constant returns (uint doc_id,bytes32 name,bytes32 practice_type,bytes32 area_of_expertize,uint phone_no,bytes32 Address){
-        uint val = addresstoId[msg.sender];
+    function getDoctorDetails(uint256 _d_id) public view returns (uint256 doc_id,string memory name,string memory practice_type,string memory area_of_expertize,uint256 phone_no,string memory Address){
+        uint256 val = addresstoId[msg.sender];
         require(entitie[val]==2 || entitie[val]==1 ); 
         return( did[_d_id].doc_id,did[_d_id].name,did[_d_id].practice_type,did[_d_id].area_of_expertize,did[_d_id].phone_no,did[_d_id].Address);
     }
 
-    function requestAccessToPatient(uint _adharCardNumber) returns(uint){
-           uint val = addresstoId[msg.sender];
+    function requestAccessToPatient(uint256 _adharCardNumber) public returns(uint256){
+           uint256 val = addresstoId[msg.sender];
            require(entitie[val]==2);
-           uint otp = uint(keccak256(now*_adharCardNumber));
-           Otp[_adharCardNumber] = otp;
        }
        
-       function getDetailsOfAllTID(uint _adharCardNumber, uint OTP) public returns(uint []){
-           uint val = addresstoId[msg.sender];
-           require(entitie[val]==2 && Otp[_adharCardNumber]==OTP);
-           return(p_info[_adharCardNumber].treatmentId);
-           
+       function getDetailsOfAllTID(uint256 _adharCardNumber, uint256 OTP) public returns(uint256){
+           uint256 val = addresstoId[msg.sender];
+           require(entitie[val]==2 && Otp[_adharCardNumber]==OTP);           
        }
-
-    
     //---------------------------------------------------------------------------------------------------------------------------------
     //Medical store
     
     struct chemist {
-        uint chemist_id;
-        bytes32 Address;
-        bytes32 name;
-        uint phoneNo;
-        bytes32 [] medicines;
+        uint256 chemist_id;
+        string Address;
+        string name;
+        uint256 phoneNo;
+        string [] medicines;
     }
     
-    mapping(uint=>chemist) cid;
+    mapping(uint256=>chemist) cid;
  
-    function addChemist(uint chem_id, bytes32 Address, bytes32 name,uint phone_no) public {
+    function addChemist(uint256 chem_id,string memory Address,string memory name,uint256 phone_no) public {
         require(entitie[chem_id]==0 || addresstoId[msg.sender]==0); 
         cid[chem_id].chemist_id = chem_id;
         cid[chem_id].Address = Address;
@@ -219,22 +209,22 @@ contract All_In_One {
         IdtoAdress[chem_id] = msg.sender;
     }
     
-    function getchemistinfo(uint chem_id) public returns(bytes32 Address, bytes32 name,uint phone_no){
+    function getchemistinfo(uint256 chem_id) public returns(string memory Address,string memory name,uint256 phone_no){
         require(entitie[chem_id]==4 || entitie[chem_id]==1); 
         return( cid[chem_id].Address,cid[chem_id].name,cid[chem_id].phoneNo);
     }
     
-    function giveMedicines(uint p_id) public constant returns(bytes32){
-        uint val = addresstoId[msg.sender];
-        bytes32 medicatines = tid[p_info[p_id].treatmentId[p_info[p_id].treatmentId.length-1]].medicine;
+    function giveMedicines(uint256 p_id) public  returns(string memory){
+        uint256 val = addresstoId[msg.sender];
+        string memory medicatines = tid[p_info[p_id].treatmentId[p_info[p_id].treatmentId.length-1]].medicine;
         return(medicatines);
     }
     
 //--------------------------------------------------------------------------------------------------------------------------
 //Identify
  
-    function Identify() public returns (uint val) {
-        uint No = addresstoId[msg.sender];
+    function Identify() public returns (uint256 val) {
+        uint256 No = addresstoId[msg.sender];
         if(entitie[No]==0){
             return(0);
         }
@@ -243,16 +233,4 @@ contract All_In_One {
     }
  
 }
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
  
